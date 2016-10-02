@@ -1,0 +1,5 @@
+http://www.linkedin.com/vsearch/p?&openAdvancedForm=true&titleScope=CP&locationType=Y&sortBy=R&&f_N=S
+
+export PATH=$PATH:/C:/BotLinkedIn/packages/geckodriver.exe
+
+C:\BotLinkedIn\bin\Debug\geckodriver.exe
