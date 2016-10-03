@@ -18,6 +18,7 @@ namespace BotLinkedIn
         private Browser browserIn = Browser.Instance;
         private LinkedHelper linkedView = new LinkedHelper();
         private CrmHelper crmView = new CrmHelper();
+        //private Account searchView = new Account();
         public Form1()
         {
             InitializeComponent();
@@ -125,6 +126,23 @@ namespace BotLinkedIn
             return;
         }
 
+        public void SearchByCountry()
+        {
+            // Загрузить настройки
+            //Settings.Read();
+            // Запуск 2 экземпляров броузера
+            browserIn.Start();
+            // Подключиться к LinkedIn
+           ;
+            // Подключиться к CRM
+            crmView.Login();
+            linkedView.SetCrmHelper(crmView);
+            //send message
+            crmView.AddPersonRecordForMassEmail();
+            return;
+        }
+
+
         private void button1_Click(object sender, EventArgs e)
         {
             textBox1.AppendText("LinkedIn Bot Running...");
@@ -146,14 +164,14 @@ namespace BotLinkedIn
                 case 4:     // Режим работы - Провека существующих контактов
                     AcceptingVerify();
                     break;
-                    //added for testing
-                //case 5:     // Режим работы - send mail to user
-                //    SendMailUser();
-                //    break;
                 //added for testing
-                case 6:     // Режим работы - add person record crm test 
-                    AddPersonRecordForMassEmail();
+                case 5:     // Режим работы - search user by country
+                    SearchByCountry();
                     break;
+                //added for testing
+                //case 6:     // Режим работы - add person record crm test 
+                //    AddPersonRecordForMassEmail();
+                //    break;
                 default:
                     break;
             }
