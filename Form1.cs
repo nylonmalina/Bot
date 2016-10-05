@@ -129,16 +129,16 @@ namespace BotLinkedIn
         public void SearchByCountry()
         {
             // Загрузить настройки
-            //Settings.Read();
+            Settings.Read();
             // Запуск 2 экземпляров броузера
             browserIn.Start();
             // Подключиться к LinkedIn
-           ;
+            linkedView.Login(); ;
             // Подключиться к CRM
             crmView.Login();
-            linkedView.SetCrmHelper(crmView);
+            //linkedView.SetCrmHelper(crmView);
             //send message
-            crmView.AddPersonRecordForMassEmail();
+            linkedView.SearchByCountry();
             return;
         }
 
