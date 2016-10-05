@@ -552,83 +552,83 @@ namespace BotLinkedIn
         public void SearchByCountry()
         {
            
-            // список/словарь для хранения пользователей 
+            // Словарь для хранения пользователей 
             Dictionary<string, int> users = new Dictionary<string, int>();
 
             // release String searchUrl = "https://www.linkedin.com/vsearch/p?type=people&orig=FCTD&rsid=5225796901475164704017&pageKey=oz-winner&trkInfo=tarId%3A1475153538610&trk=global_header&search=Search&f_G=ch%3A4938,ch%3A4930,ch%3A4928,ch%3A4929,ch%3A4935,ch%3A4937,ch%3A4932,ch%3A4934,ch%3A4936,de%3A4953,de%3A4966,de%3A5000,de%3A4944,de%3A4977,de%3A5026,de%3A5007,de%3A4980,de%3A4998&openFacets=N,G,CC&f_N=F";
             //debug for Testing
+            //переходим на страницу поиска с нужными странами
             String searchUrl = "https://www.linkedin.com/vsearch/p?type=people&orig=FCTD&rsid=3858883691475486975650&pageKey=oz-winner&trkInfo=tarId%3A1475153538610&trk=global_header&search=Search&openFacets=N,G,CC&pt=people&f_N=F,A";
             browser.LinkedInNavigateTo(searchUrl);
             System.Threading.Thread.Sleep(1000);
 
             IWebElement country, linkName; // linkUrl;   count, //аботает добавить элементы для сравнения с контактами в CRM
-            int i, k, userCount, userCountUpd, curUserCount, botIndex, cntPage, allRecord, j, l;
+            int i, userCount, cntPage, j, l;
             cntPage = 0;
-            allRecord = 0;
-            String userCountry, linkNameS, tmpString;
+               String userCountry, linkNameS;
             //String userCountry, userCounts, linkNameS, tmpString;
             //botIndex = Index;
-
-            //переходим на страницу поиска с нужными странами
+                       
             j = 11;
-            for (i = 2, k = 2; i <= 19; i++, k++)
+            for (i = 1; i <= 19; i++)
             {
                 try
                 {
-                    // Получаем данные location начало - .//*[@id='facet-G']/fieldset/div/ol/li[2]/div/label/bdi, конец - .//*[@id='facet-G']/fieldset/div/ol/li[19]/div/label/bdi
-                    //"//*[@id='message-list']/form/ol/li[" + i.ToString() + "]/div/div[2]/p/a"
-                    //country = SeleniumHelper.WaitForElement(By.XPath(".//*[@id='facet-G']/fieldset/div/ol/li[" + i.ToString() + "]/div/label/bdi"));
-                    //country = SeleniumHelper.WaitForElement(By.XPath(".//*[@id='facet-G']/fieldset/div/ol/li[2]/div/label/bdi"));
-                    //userCountry = country.GetAttribute("title");
-                    //userCountry = SeleniumHelper.WaitForElement(By.XPath(".//*[@id='facet-G']/fieldset/div/ol/li[2]/div/label/bdi")).Text;
-                    country = SeleniumHelper.WaitForElement(By.XPath(".//*[@id='results']/li[1]/div/dl/dd[1]/bdi"));
-                    userCountry = country.Text;
-                    userCount = 0;
-                    //Получаем данные count начало - .//*[@id='facet-G']/fieldset/div/ol/li[2]/div/span, конец - .//*[@id='facet-G']/fieldset/div/ol/li[19]/div/span
-                    //count = SeleniumHelper.WaitForElement(By.XPath(".//*[@id='facet-G']/fieldset/div/ol/li[" + k.ToString() + "]/div/span"));
-                    //userCounts = count.GetAttribute("text");
-                    //userCount = Int32.Parse(userCounts);
-                    //users.TryGetValue(userCountry, out curUserCount);
-                    //userCountUpd = 0;
-                    //Проверяем есть ли контакт в CRM
-
-                    //if (userCount != 0)
                     if (SeleniumHelper.IsElementPresent(By.Id("empty-results-description")) == false)
                     {
                         for (l = 1; l < 11; l++)
                         {
+                            // Получаем данные location c профиля
+                            country = SeleniumHelper.WaitForElement(By.XPath(".//*[@id='results']/li[" + i.ToString() + "]/div/dl/dd[1]/bdi"));
+                            userCountry = country.Text;
+                            //устанавливаем изначальный  count
+                            userCount = 0;
+                            // получаем имя пользователя для поиска в CRM
                             linkName = SeleniumHelper.WaitForElement(By.XPath(".//*[@id='results']/li[" + l.ToString() + "]/div/h3/a"));
-                            linkNameS = linkName.ToString();
+                            linkNameS = linkName.Text;
+                            //поиск пользователя в CRM
                             crmView.SetSearchMode(0);
                             crmView.SearchContactByName(linkNameS);
                             if (crmView.SearchContactByName(linkNameS) == true)
                             {
-                                 userCount++;
-                                Console.WriteLine(userCountry);
-                                //userCountUpd++;
+                                userCount++;
+                                crmView.AddUserCountry(userCountry);
+                                //userCountUpd++;.
                             }
+                            else
+                            {
+                                return;
+                            }
+                            users.Add(userCountry, userCount);
                         }
-                        //if (botIndex >= 2 && users.ContainsKey(userCountry) == true)
-                        //{
-                        //    userCount = userCountUpd + curUserCount;
-                        //}
-                        // Переход на следующую страницу
                         j += 10;
                         cntPage++;
-                        // Это последняя страница?
                         if (cntPage == 35)
                             break;
-                        tmpString = searchUrl + j.ToString() + "&pt=people";
-                        browser.LinkedInNavigateTo(tmpString);
                     }
-                    users.Add(userCountry, userCount);
-                    var lines = users.Select(kvp => kvp.Key + ": " + kvp.Value.ToString());
-                    System.IO.File.WriteAllLines(@"C:\BotLinkedIn\UsersByCountry.txt", lines);
                 }
+               
                 catch (Exception ex)
                 {
                     return;
                 }
+                    //if (botIndex >= 2 && users.ContainsKey(userCountry) == true)
+                    //{
+                    //    userCount = userCountUpd + curUserCount;
+                    //}
+                    // Переход на следующую страницу
+
+                    // Это последняя страница?
+
+                    //tmpString = searchUrl + j.ToString() + "&pt=people";
+                    //browser.LinkedInNavigateTo(tmpString);
+                }
+
+                   
+                    //var lines = users.Select(kvp => kvp.Key + ": " + kvp.Value.ToString());
+                    //System.IO.File.WriteAllLines(@"C:\BotLinkedIn\UsersByCountry.txt", lines);
+                
+           
                 //Выводим словарь с пользователями
 
                 //using LINQ
@@ -649,6 +649,6 @@ namespace BotLinkedIn
 
 
     }
-}
+
 
 
