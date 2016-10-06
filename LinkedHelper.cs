@@ -45,10 +45,10 @@ namespace BotLinkedIn
         private string curIndustry;
         private int cntInvite;
         private static Random randomGenerator;
-
+       
         public void SetCrmHelper(CrmHelper view)
         {
-            crmView = view;
+          crmView = view;
             return;
         }
 
@@ -552,8 +552,8 @@ namespace BotLinkedIn
         public void SearchByCountry()
         {
            
-            // Словарь для хранения пользователей 
-            Dictionary<string, int> users = new Dictionary<string, int>();
+            // Словарь для хранения пользователей - сделать struct
+            Dictionary<string, string> users = new Dictionary<string, string>();
 
             // release String searchUrl = "https://www.linkedin.com/vsearch/p?type=people&orig=FCTD&rsid=5225796901475164704017&pageKey=oz-winner&trkInfo=tarId%3A1475153538610&trk=global_header&search=Search&f_G=ch%3A4938,ch%3A4930,ch%3A4928,ch%3A4929,ch%3A4935,ch%3A4937,ch%3A4932,ch%3A4934,ch%3A4936,de%3A4953,de%3A4966,de%3A5000,de%3A4944,de%3A4977,de%3A5026,de%3A5007,de%3A4980,de%3A4998&openFacets=N,G,CC&f_N=F";
             //debug for Testing
@@ -570,47 +570,58 @@ namespace BotLinkedIn
             //botIndex = Index;
                        
             j = 11;
-            for (i = 1; i <= 19; i++)
+
+            //try
+            //{
+            if (SeleniumHelper.IsElementPresent(By.Id("empty-results-description")) == false)
             {
-                try
+
+                for (i = 1, l = i; i < 11; i++, l++)
                 {
-                    if (SeleniumHelper.IsElementPresent(By.Id("empty-results-description")) == false)
+                    browser.SetCurrentWindow(0);
+                    // Получаем данные location c профиля
+                    country = SeleniumHelper.WaitForElement(By.XPath(".//*[@id='results']/li[" + i.ToString() + "]/div/dl/dd[1]/bdi"));
+                    userCountry = country.Text;
+                    //устанавливаем изначальный  count
+                    userCount = 0;
+                    // получаем имя пользователя для поиска в CRM 
+                    linkName = SeleniumHelper.WaitForElement(By.XPath(".//*[@id='results']/li[" + l.ToString() + "]/div/h3/a"));
+                    linkNameS = linkName.Text;
+                    //поиск пользователя в CRM
+                    //browser.CrmNavigateTo("http://crm.smart.argus/index.php?module=Contacts&action=index&return_module=Contacts&return_action=DetailView");
+                    browser.SetCurrentWindow(1);
+                    crmView.SetSearchMode(0);
+
+                    //browser.SetCurrentWindow(0);
+                    //crmView.SearchContactByName(linkNameS);
+                    while (crmView.SearchContactByName(linkNameS) == true)
                     {
-                        for (l = 1; l < 11; l++)
-                        {
-                            // Получаем данные location c профиля
-                            country = SeleniumHelper.WaitForElement(By.XPath(".//*[@id='results']/li[" + i.ToString() + "]/div/dl/dd[1]/bdi"));
-                            userCountry = country.Text;
-                            //устанавливаем изначальный  count
-                            userCount = 0;
-                            // получаем имя пользователя для поиска в CRM
-                            linkName = SeleniumHelper.WaitForElement(By.XPath(".//*[@id='results']/li[" + l.ToString() + "]/div/h3/a"));
-                            linkNameS = linkName.Text;
-                            //поиск пользователя в CRM
-                            crmView.SetSearchMode(0);
-                            crmView.SearchContactByName(linkNameS);
-                            if (crmView.SearchContactByName(linkNameS) == true)
-                            {
-                                userCount++;
-                                crmView.AddUserCountry(userCountry);
-                                //userCountUpd++;.
-                            }
-                            else
-                            {
-                                return;
-                            }
-                            users.Add(userCountry, userCount);
-                        }
-                        j += 10;
-                        cntPage++;
-                        if (cntPage == 35)
-                            break;
+                        crmView.AddUserCountry(userCountry);
+                        break;
                     }
+                    users.Add(linkNameS, userCountry);
+                    //do
+                    //{
+                    //    //userCount++;
+                    //    crmView.AddUserCountry(userCountry);
+                    //    //userCountUpd++;.
+                    //} while (crmView.SearchContactByName(linkNameS) == true);
+                    //users.Add(linkNameS, userCountry);
+
                 }
-               
-                catch (Exception ex)
-                {
-                    return;
+                    //j += 10;
+                    //cntPage++;
+                    //if (cntPage == 35)
+                    //    break;
+                    //browser.SetCurrentWindow(0);
+                    //browser.LinkedInNavigateTo(searchUrl);
+                //}
+            }
+                        
+                //    }               
+                //catch (Exception ex)
+                //{
+                    //return;
                 }
                     //if (botIndex >= 2 && users.ContainsKey(userCountry) == true)
                     //{
@@ -644,11 +655,11 @@ namespace BotLinkedIn
                 //}
 
             }
-        }
+        
 
 
 
-    }
 
+   
 
 

@@ -519,8 +519,8 @@ namespace BotLinkedIn
                         tempCountryField = SeleniumHelper.WaitForElement(By.Id("description"));
                         tempCountryField.SendKeys(userCountry);
                         System.Threading.Thread.Sleep(5000);
-                        saveButton = SeleniumHelper.WaitForElement(By.Id("SAVE_FOOTER"));
-                        saveButton.Submit();
+                        saveButton = SeleniumHelper.WaitForElement(By.Id("SAVE_HEADER"));
+                        saveButton.Click();
                     }
                     else
                     {
