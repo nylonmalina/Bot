@@ -15,7 +15,7 @@ namespace BotLinkedIn
      * 
      */
 
-   internal struct DataIn
+    internal struct DataIn
     {
         internal string curIndustry;
         internal string fullName;
@@ -29,7 +29,7 @@ namespace BotLinkedIn
         internal bool isMessageSend;
     }
 
-   
+
 
     //class CrmHelper
     //{
@@ -45,10 +45,10 @@ namespace BotLinkedIn
         private string curIndustry;
         private int cntInvite;
         private static Random randomGenerator;
-       
+
         public void SetCrmHelper(CrmHelper view)
         {
-          crmView = view;
+            crmView = view;
             return;
         }
 
@@ -78,18 +78,18 @@ namespace BotLinkedIn
             return;
         }
 
-//        public void SearchUserCountry ()
-//        {
-//            UserCred testcred = new UserCred();
-//            testcred.email = "i.rebenok@argus-soft.net";
-//            testcred.password = "Iv@N5434LokC";
-//            testcred.index = 1;
+        //        public void SearchUserCountry ()
+        //        {
+        //            UserCred testcred = new UserCred();
+        //            testcred.email = "i.rebenok@argus-soft.net";
+        //            testcred.password = "Iv@N5434LokC";
+        //            testcred.index = 1;
 
-//{
-//    new Account("i.rebenok@argus-soft.net", "Iv@N5434LokC", 1),    // Create a new account
-//    new Account("cfilimonchuk1@gmail.com", "lin147258", 2)    // Create another account
-//};
-//        }
+        //{
+        //    new Account("i.rebenok@argus-soft.net", "Iv@N5434LokC", 1),    // Create a new account
+        //    new Account("cfilimonchuk1@gmail.com", "lin147258", 2)    // Create another account
+        //};
+        //        }
 
 
 
@@ -548,10 +548,10 @@ namespace BotLinkedIn
 
         //      return (string)result[1];
         //  }
-        
+
         public void SearchByCountry()
         {
-           
+
             // Словарь для хранения пользователей - сделать struct
             Dictionary<string, string> users = new Dictionary<string, string>();
 
@@ -565,10 +565,10 @@ namespace BotLinkedIn
             IWebElement country, linkName; // linkUrl;   count, //аботает добавить элементы для сравнения с контактами в CRM
             int i, userCount, cntPage, j, l;
             cntPage = 0;
-               String userCountry, linkNameS;
+            String userCountry, linkNameS;
             //String userCountry, userCounts, linkNameS, tmpString;
             //botIndex = Index;
-                       
+
             j = 11;
 
             //try
@@ -579,12 +579,33 @@ namespace BotLinkedIn
                 for (i = 1, l = i; i < 11; i++, l++)
                 {
                     browser.SetCurrentWindow(0);
-                    // Получаем данные location c профиля
+                    // Получаем данные location c профиля 
                     country = SeleniumHelper.WaitForElement(By.XPath(".//*[@id='results']/li[" + i.ToString() + "]/div/dl/dd[1]/bdi"));
                     userCountry = country.Text;
                     //устанавливаем изначальный  count
                     userCount = 0;
                     // получаем имя пользователя для поиска в CRM 
+                    //{
+                    //            linkNameStr = SeleniumHelper.WaitForElement(By.XPath("//*[@id='name']/h1/span/span[1]")).Text;
+                    //           linkHeadLine = SeleniumHelper.WaitForElement(By.XPath("//*[@id='headline']/p")).Text;
+                    //            if (SeleniumHelper.IsElementPresent(By.XPath("//*[@id='top-card']/div/div[2]/div[2]/ul/li/dl/dd/a")))
+                    //            {
+                    //                curData.eLinkPage = SeleniumHelper.WaitForElement(By.XPath("//*[@id='top-card']/div/div[2]/div[2]/ul/li/dl/dd/a")).Text;
+                    //                tmpObj = "1";
+                    //            }
+                    //            else
+                    //            {
+                    //                //*[@id='top-card']/div/div[2]/div/ul/li/dl/dd/a
+                    //                if (SeleniumHelper.IsElementPresent(By.XPath("//*[@id='top-card']/div/div[2]/div/ul/li/dl/dd/a")))
+                    //                {
+                    //                    curData.eLinkPage = SeleniumHelper.WaitForElement(By.XPath("//*[@id='top-card']/div/div[2]/div/ul/li/dl/dd/a")).Text;
+                    //                    tmpObj = "2";
+                    //                }
+                    //                else
+                    //                {
+                    //                    ;
+                    //                }
+                    //            }
                     linkName = SeleniumHelper.WaitForElement(By.XPath(".//*[@id='results']/li[" + l.ToString() + "]/div/h3/a"));
                     linkNameS = linkName.Text;
                     //поиск пользователя в CRM
@@ -596,10 +617,12 @@ namespace BotLinkedIn
                     //crmView.SearchContactByName(linkNameS);
                     while (crmView.SearchContactByName(linkNameS) == true)
                     {
-                        crmView.AddUserCountry(userCountry);
+                        crmView.AddUserCountry(linkNameS, userCountry);
+                        users.Add(linkNameS, userCountry);
                         break;
                     }
-                    users.Add(linkNameS, userCountry);
+
+
                     //do
                     //{
                     //    //userCount++;
@@ -608,53 +631,59 @@ namespace BotLinkedIn
                     //} while (crmView.SearchContactByName(linkNameS) == true);
                     //users.Add(linkNameS, userCountry);
 
-                }
-                    //j += 10;
-                    //cntPage++;
-                    //if (cntPage == 35)
-                    //    break;
+
+
+
+                    j += 10;
+                    cntPage++;
+                    if (cntPage == 35)
+                        break;
                     //browser.SetCurrentWindow(0);
                     //browser.LinkedInNavigateTo(searchUrl);
-                //}
-            }
-                        
+                    foreach (KeyValuePair<string, string> kvp in users)
+                    {
+                        System.IO.File.AppendAllText("dictionary.txt", string.Format("{0} {1} {2}", kvp.Key, kvp.Value, Environment.NewLine));
+                    }//}
+                }
+
                 //    }               
                 //catch (Exception ex)
                 //{
-                    //return;
-                }
-                    //if (botIndex >= 2 && users.ContainsKey(userCountry) == true)
-                    //{
-                    //    userCount = userCountUpd + curUserCount;
-                    //}
-                    // Переход на следующую страницу
-
-                    // Это последняя страница?
-
-                    //tmpString = searchUrl + j.ToString() + "&pt=people";
-                    //browser.LinkedInNavigateTo(tmpString);
-                }
-
-                   
-                    //var lines = users.Select(kvp => kvp.Key + ": " + kvp.Value.ToString());
-                    //System.IO.File.WriteAllLines(@"C:\BotLinkedIn\UsersByCountry.txt", lines);
-                
-           
-                //Выводим словарь с пользователями
-
-                //using LINQ
-
-                //var lines = users.Select(users => users.Key + ": " + users.Value.ToString());
-                //var lines = users.Select(kvp => kvp.Key + ": " + kvp.Value.ToString());
-                //System.IO.File.WriteAllLines(@"C:\BotLinkedIn\UsersByCountry.txt", lines);
-
-                //foreach (KeyValuePair<string, int> kvp in users)
-                //{
-                //    //textBox3.Text += ("Key = {0}, Value = {1}", kvp.Key, kvp.Value);
-                //    Console.WriteLine("Key = {0}, Value = {1}", kvp.Key, kvp.Value);
-                //}
-
+                //return;
             }
+            //if (botIndex >= 2 && users.ContainsKey(userCountry) == true)
+            //{
+            //    userCount = userCountUpd + curUserCount;
+            //}
+            // Переход на следующую страницу
+
+            // Это последняя страница?
+
+            //tmpString = searchUrl + j.ToString() + "&pt=people";
+            //browser.LinkedInNavigateTo(tmpString);
+        }
+
+
+        //var lines = users.Select(kvp => kvp.Key + ": " + kvp.Value.ToString());
+        //System.IO.File.WriteAllLines(@"C:\BotLinkedIn\UsersByCountry.txt", lines);
+
+
+        //Выводим словарь с пользователями
+
+        //using LINQ
+
+        //var lines = users.Select(users => users.Key + ": " + users.Value.ToString());
+        //var lines = users.Select(kvp => kvp.Key + ": " + kvp.Value.ToString());
+        //System.IO.File.WriteAllLines(@"C:\BotLinkedIn\UsersByCountry.txt", lines);
+
+        //foreach (KeyValuePair<string, int> kvp in users)
+        //{
+        //    //textBox3.Text += ("Key = {0}, Value = {1}", kvp.Key, kvp.Value);
+        //    Console.WriteLine("Key = {0}, Value = {1}", kvp.Key, kvp.Value);
+        //}
+
+    }
+}
         
 
 

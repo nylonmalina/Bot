@@ -467,9 +467,9 @@ namespace BotLinkedIn
         public bool SearchContactByName(string userName)
         {
             IWebElement elUserName, elUserSearch;
-            string firstName, lastName;
-            browser.CrmNavigateTo(GetBaseUrl() + "index.php?module=Contacts&action=index&return_module=Contacts&return_action=DetailView");
-
+            string firstName, lastName; 
+                browser.CrmNavigateTo(GetBaseUrl() + "index.php?module=Contacts&action=index&return_module=Contacts&return_action=DetailView");
+        
             try
             {
                 if (SeleniumHelper.IsElementPresent(By.Id("search_name_basic")))
@@ -481,6 +481,7 @@ namespace BotLinkedIn
                         firstName = userName.Split(' ')[0];
                         lastName = userName.Split(' ')[1];
                         elUserName.SendKeys(firstName + " " + lastName);
+                        
                     }
                 }
 
@@ -505,26 +506,50 @@ namespace BotLinkedIn
         }
 
 
-        public void AddUserCountry(string userCountry)
+        public void AddUserCountry(string userName, string userCountry)
         {
             IWebElement tempCountryField, editButton, saveButton;
+            string firstName, lastName;
+            IWebElement firstCrmName, lastCrmName;
+            firstName = userName.Split(' ')[0];
+            lastName = userName.Split(' ')[1];
+
             try
             {
+                editButton = SeleniumHelper.WaitForElement(By.XPath(".//*[@id='edit-582b482b-0a7f-253d-cc86-57def3b3df4e']/img"));
+                editButton.Click();
+
+                //browser.SetCurrentWindow(1);
+                //browser.CrmNavigateTo(GetBaseUrl() + "index.php?module=Contacts&action=EditView&return_module=Contacts&return_action=index");
+
                 if (SeleniumHelper.IsElementPresent(By.XPath("//*[@id='MassUpdate']/div[1]/p")) == false)
                 {
-                    editButton = SeleniumHelper.WaitForElement(By.XPath(".//*[@id='edit-582b482b-0a7f-253d-cc86-57def3b3df4e']/img"));
-                    editButton.Click();
-                    if (SeleniumHelper.IsElementPresent(By.Id("LBL_CONTACT_INFORMATION")) == true)
+                    // Получаем элементы для доступа
+                    // Имя и фамилия
+                    if (SeleniumHelper.IsElementPresent(By.XPath("//*[@id='first_name']")) && SeleniumHelper.IsElementPresent(By.XPath("//*[@id='last_name']")))
                     {
-                        tempCountryField = SeleniumHelper.WaitForElement(By.Id("description"));
-                        tempCountryField.SendKeys(userCountry);
-                        System.Threading.Thread.Sleep(5000);
-                        saveButton = SeleniumHelper.WaitForElement(By.Id("SAVE_HEADER"));
-                        saveButton.Click();
-                    }
-                    else
-                    {
-                        return;
+                        firstCrmName = SeleniumHelper.WaitForElement(By.XPath("//*[@id='first_name']"));
+                        firstName.Equals(firstCrmName);
+                        lastCrmName = SeleniumHelper.WaitForElement(By.XPath("//*[@id='last_name']"));
+                        lastName.Equals(lastCrmName);
+
+                        //заполняем поле страна и сохраняем
+
+                        if (SeleniumHelper.IsElementPresent(By.Id("description")))
+                        {
+                            tempCountryField = SeleniumHelper.WaitForElement(By.Id("description"));
+                            if (tempCountryField.Text.Contains(userCountry) == false)
+                            {
+                                tempCountryField.SendKeys(userCountry);
+                                System.Threading.Thread.Sleep(5000);
+                                saveButton = SeleniumHelper.WaitForElement(By.Id("SAVE_HEADER"));
+                                saveButton.Click();
+                            }
+                        }
+                        else
+                        {
+                            return;
+                        }
                     }
                 }
             }
