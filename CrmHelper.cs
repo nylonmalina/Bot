@@ -598,6 +598,7 @@ namespace BotLinkedIn
         }
 
 
+
         public void MarkAsPending(PersonTest person)
         {
 
@@ -724,7 +725,7 @@ namespace BotLinkedIn
             }
         }
 
-        /* FINISH HIM = DEBUG AND FIX
+        /* IT WORKS
          */
         public bool CheckContactAccept(PersonTest person)
         {
@@ -842,18 +843,74 @@ namespace BotLinkedIn
             }
         }
 
+        public void UpdateLinkUrl(PersonTest person)
+            {
+            IWebElement firstname, lastname, editButton, searchField, searchButton, linkName, linkUrl;
+            string tmpStr, urlLink;
+            browser.SetCurrentWindow(1);
 
-        public void AddUserCountry(string userName, string userCountry)
+       
+            browser.CrmNavigateTo(person.crmLink);
+            try
+            {
+                editButton = SeleniumHelper.WaitForElement(By.Id("edit_button"));
+                editButton.Click();
+                //получаем данные для поиска в crm
+                firstname = SeleniumHelper.WaitForElement(By.Id("first_name"));
+                lastname = SeleniumHelper.WaitForElement(By.Id("last_name"));
+                tmpStr = firstname.GetAttribute("value") +' '+ lastname.GetAttribute("value");
+                //ищем в линкедин
+                browser.SetCurrentWindow(0);
+                browser.LinkedInNavigateTo("https://www.linkedin.com/home?trk=nav_responsive_tab_home");
+                //добавить логин при блокировке сессии 
+                searchField = SeleniumHelper.WaitForElement(By.Id("main-search-box");
+                searchField.Clear();
+                System.Threading.Thread.Sleep(5000);
+                searchField.SendKeys(tmpStr);
+                System.Threading.Thread.Sleep(5000);
+                searchButton = SeleniumHelper.WaitForElement(By.XPath(".//*[@id='global-search']/fieldset/button"));
+                System.Threading.Thread.Sleep(5000);
+                searchButton.Click();
+                System.Threading.Thread.Sleep(5000);
+
+                //Если пользователь не найден
+                if (SeleniumHelper.IsElementPresent(By.Id("empty-results-description")))
+                {
+                    //MarkAsUnreachableAccount();
+                    //TODO implement later
+                }
+                else if (SeleniumHelper.IsElementPresent(By.XPath(".//*[@id='results']/li[2]/div/h3/a")))
+                { 
+                    linkName = SeleniumHelper.WaitForElement(By.XPath(".//*[@id='results']/li[2]/div/h3/a"));
+                    if (linkName.Equals(tmpStr))
+                    {
+                        browser.LinkedInNavigateTo(linkName.GetAttribute("href"));
+                        linkUrl = SeleniumHelper.WaitForElement(By.)
+                    }
+                    {
+
+                    }     
+                }
+
+
+
+            }
+
+
+        public void AddUserCountry(PersonTest person)
         {
-            IWebElement tempCountryField, editButton, saveButton;
-            string firstName, lastName;
-            IWebElement firstCrmName, lastCrmName;
-            firstName = userName.Split(' ')[0];
-            lastName = userName.Split(' ')[1];
+            IWebElement tempCountryField, editButton, saveButton, linkedCountry;
+           
+            browser.SetCurrentWindow(0);
+            linkedCountry = SeleniumHelper.WaitForElement(By.Id("location"));
+
+            browser.SetCurrentWindow(1);
+            browser.CrmNavigateTo(person.crmLink);
+
 
             try
             {
-                editButton = SeleniumHelper.WaitForElement(By.XPath("html/body/div[2]/div[1]/table/tbody/tr/td/div[3]/form[3]/table/tbody/tr[3]/td[2]/a/img"));
+                editButton = SeleniumHelper.WaitForElement(By.Id("edit_button"));
                 editButton.Click();
 
                 //browser.SetCurrentWindow(1);
@@ -861,29 +918,13 @@ namespace BotLinkedIn
 
                 if (SeleniumHelper.IsElementPresent(By.XPath("//*[@id='MassUpdate']/div[1]/p")) == false)
                 {
-                    // Получаем элементы для доступа
-                    // Имя и фамилия
-                    // if (SeleniumHelper.IsElementPresent(By.XPath("//*[@id='first_name']")) && SeleniumHelper.IsElementPresent(By.XPath("//*[@id='last_name']")))
-                    //{
-                    //    firstCrmName = SeleniumHelper.WaitForElement(By.XPath("//*[@id='first_name']"));
-                    //    firstName.Equals(firstCrmName);
-                    //    lastCrmName = SeleniumHelper.WaitForElement(By.XPath("//*[@id='last_name']"));
-                    //    lastName.Equals(lastCrmName);
-
-                    //Только имя - временно
-                    if (SeleniumHelper.IsElementPresent(By.XPath("//*[@id='first_name']")))
-                    {
-                        firstCrmName = SeleniumHelper.WaitForElement(By.XPath("//*[@id='first_name']"));
-                        firstName.Equals(firstCrmName);
-
-                        //заполняем поле страна и сохраняем
-
+                  
                         if (SeleniumHelper.IsElementPresent(By.Id("description")))
                         {
                             tempCountryField = SeleniumHelper.WaitForElement(By.Id("description"));
-                            if (tempCountryField.Text.Contains(userCountry) == false)
+                            if (tempCountryField.Text.Contains(linkedCountry.ToString()) == false)
                             {
-                                tempCountryField.SendKeys(userCountry);
+                                tempCountryField.SendKeys(linkedCountry.ToString());
                                 System.Threading.Thread.Sleep(5000);
                                 saveButton = SeleniumHelper.WaitForElement(By.Id("SAVE_HEADER"));
                                 saveButton.Click();
@@ -894,7 +935,7 @@ namespace BotLinkedIn
                             return;
                         }
                     }
-                }
+               
             }
             catch (Exception ex)
             {
