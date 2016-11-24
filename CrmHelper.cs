@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Diagnostics;
 
 namespace BotLinkedIn
 {
@@ -343,9 +344,9 @@ namespace BotLinkedIn
             IWebElement elList, elButton, elDateField;
             //changed curDate from (2013, 3, 1) than change it back
             //DateTime curDate = new DateTime(2013, 9, 16);
-            DateTime curDate = new DateTime(2013, 7, 12);
+            DateTime curDate = new DateTime(2016, 10, 29);
             //DateTime curDate = new DateTime(2014, 1, 8);
-            DateTime endTime = new DateTime(2016, 9, 20);
+            DateTime endTime = new DateTime(2016, 11, 1);
             string tmpStr = "";
             int i;
             // Переключится на режим расширенного поиска
@@ -354,7 +355,7 @@ namespace BotLinkedIn
             personList.Clear();
             elList = SeleniumHelper.WaitForElement(By.XPath("//*[@id='messagewassent_c_advanced']"));
             SelectElement sel = new SelectElement(elList);
-            sel.SelectByText("Да");
+            sel.SelectByText("Нет");
             //sel.SelectByText("Нет");
             //elList = SeleniumHelper.WaitForElement(By.XPath("//*[@id='assigned_user_id_advanced']"));
             //sel = new SelectElement(elList);
@@ -424,6 +425,7 @@ namespace BotLinkedIn
             //    *[@id='MassUpdate']/table/tbody/tr[4]/td[5]
             //    *[@id='MassUpdate']/table/tbody/tr[4]/td[8]
             //     .//*[@id='listViewNextButton_bottom']
+
             for (i = 0; i < 20; i++)
             {
                 //имя пользователя в результатах поиска сrmLink
@@ -447,29 +449,74 @@ namespace BotLinkedIn
                     //      здесь была работа с сообщениями 
                     // Заполнение поля Меssage
                     tStr = "data\\MassEmail\\" + Settings.BotSettings.CurrentUser + "\\Default.txt";
-                    if (File.Exists(tStr))
-                    {
-                        tmpStr = System.IO.File.ReadAllText(tStr);
-                        person.messageText = tmpStr;
-                        //person.isMessageSend = true;
-                    }
-                    else
-                        continue;
-                    //                 Добавление в список
+                    person.messageText = tStr;
+                    //if (File.Exists(tStr))
+                    //{
+                    //    tmpStr = System.IO.File.ReadAllText(tStr);
+                    //    person.messageText = tmpStr;
+                    //    //person.isMessageSend = true;
+                    //}
+                    //else
+                    //    continue;
+                    //  Добавление в список
                     personList.Add(person);
-                    //                здесь был сontinue
-                    return;
+                    Debug.WriteLine(person.ToString());
+                    
+
+                    //сontinue;
+
                 }
+                else
+                    break;
             }
+            
+
+            return;
         }
+        public void SearchUsersTest()
+        {
+            IWebElement elList, elButton, elDateField;
+            string tmpStr;
+            //я дата поиска
+            DateTime curDate = new DateTime(2016, 10, 31);
+
+            SetSearchMode(1);
+            elList = SeleniumHelper.WaitForElement(By.XPath("//*[@id='messagewassent_c_advanced']"));
+            SelectElement sel = new SelectElement(elList);
+            sel.SelectByText("Нет");
+            //sel.SelectByText("Нет");
+            //elList = SeleniumHelper.WaitForElement(By.XPath("//*[@id='assigned_user_id_advanced']"));
+            //sel = new SelectElement(elList);
+            //sel.SelectByText(Settings.BotSettings.FullName);             
+            // Список кому запрещено отсылать
+            elList = SeleniumHelper.WaitForElement(By.XPath("//*[@id='do_not_call_advanced']"));
+            sel = new SelectElement(elList);
+            sel.SelectByText("Нет");
+            elList = SeleniumHelper.WaitForElement(By.Id("assigned_user_id_advanced"));
+            sel = new SelectElement(elList);
+            tmpStr = Settings.BotSettings.FullName.ToString();
+            sel.SelectByText(tmpStr);
+            elDateField = SeleniumHelper.WaitForElement(By.Id("range_date_entered_advanced"));
+            elDateField.Clear();
+
+                      tmpStr = curDate.Day.ToString() + "/" + curDate.Month.ToString() + "/" + curDate.Year.ToString();
+            elDateField.SendKeys(tmpStr);
+            elButton = SeleniumHelper.WaitForElement(By.XPath("//*[@id='search_form_submit_advanced']"));
+            elButton.Click();
+
+            AddPersonRecord();
+
+        }
+
+
         public void SearchContactsByPeriod()
         {
             // IWebElement elList, elButton, elDateField, tstItem;
             IWebElement elList, elButton, elDateField;
             //начальная дата поиска
-            DateTime curDate = new DateTime(2013, 7, 12);
+            DateTime curDate = new DateTime(2016, 10, 29);
             //дата до которой ищем 
-            DateTime endTime = new DateTime(2016, 9, 20);
+            DateTime endTime = new DateTime(2016, 11, 1);
             string tmpStr = "";
             int i;
             // Переключится на режим расширенного поиска
@@ -478,7 +525,7 @@ namespace BotLinkedIn
             personList.Clear();
             elList = SeleniumHelper.WaitForElement(By.XPath("//*[@id='messagewassent_c_advanced']"));
             SelectElement sel = new SelectElement(elList);
-            sel.SelectByText("Да");
+            sel.SelectByText("Нет");
             //sel.SelectByText("Нет");
             //elList = SeleniumHelper.WaitForElement(By.XPath("//*[@id='assigned_user_id_advanced']"));
             //sel = new SelectElement(elList);
@@ -503,7 +550,7 @@ namespace BotLinkedIn
             elDateField.Clear();
             elDateField.SendKeys(tmpStr);
 
-            i = 0;
+
             while (true)
             {
                 tmpStr = curDate.Day.ToString() + "/" + curDate.Month.ToString() + "/" + curDate.Year.ToString();
@@ -517,8 +564,8 @@ namespace BotLinkedIn
                 if (SeleniumHelper.IsElementPresent(By.XPath("//*[@id='MassUpdate']/div[1]/p")) == false)
                 {
                     // Найдена новая запись
-                   
-                 AddPersonRecord();
+
+                    AddPersonRecord();
                     //curDate = curDate.AddDays(1);
                 }
                 curDate = curDate.AddDays(1);
@@ -530,72 +577,236 @@ namespace BotLinkedIn
             }
             for (i = 0; i < personList.Count(); i++)
             {
+
                 /*поиск контакта в Linkedin
                  */
-               // SendMailUser(personList[i]);
-                //if (SendMailUser(personList[i]) == false)
-                //{
-                //    UnSetMessageSend(personList[i]);
-                //}
+                /*TODO define which method should be used
+                 */
+                //CheckContactAccept(personList[i]);
+                if (CheckContactAccept(personList[i]) == true)
+                {
+                    MarkAsAccepted(personList[i]);
+
+
+                    //{
+                    //   SetInviteAccepted(personList[i]);
+                    //}
+                }
+
+
             }
-            return;
         }
 
-        /* FINISH HIM
+
+        public void MarkAsPending(PersonTest person)
+        {
+
+            IWebElement tempInviteStateField, editButton, saveButton;
+
+            browser.SetCurrentWindow(1);
+            browser.CrmNavigateTo(person.linkedinlink);
+
+            try
+            {
+                editButton = SeleniumHelper.WaitForElement(By.Id("edit_button"));
+                editButton.Click();
+
+                if (SeleniumHelper.IsElementPresent(By.XPath("//*[@id='MassUpdate']/div[1]/p")) == false)
+                {
+
+                    //MarkAsAccepted in the field .//*[@id='department']
+
+                    if (SeleniumHelper.IsElementPresent(By.Id("department")))
+                    {
+                        tempInviteStateField = SeleniumHelper.WaitForElement(By.Id("department"));
+                        if (!String.IsNullOrEmpty(tempInviteStateField.Text) == false)
+                        {
+                            tempInviteStateField.SendKeys("Invitation is Pending");
+                            System.Threading.Thread.Sleep(5000);
+                            saveButton = SeleniumHelper.WaitForElement(By.Id("SAVE_HEADER"));
+                            saveButton.Click();
+                        }
+                    }
+                    else
+                    {
+                        return;
+                    }
+                }
+
+            }
+            catch (Exception ex)
+            {
+                return;
+            }
+        }
+
+
+        public void MarkAsRejected(PersonTest person)
+        {
+
+            IWebElement tempInviteStateField, editButton, saveButton;
+
+            browser.SetCurrentWindow(1);
+            browser.CrmNavigateTo(person.linkedinlink);
+
+            try
+            {
+                editButton = SeleniumHelper.WaitForElement(By.Id("edit_button"));
+                editButton.Click();
+
+                if (SeleniumHelper.IsElementPresent(By.XPath("//*[@id='MassUpdate']/div[1]/p")) == false)
+                {
+
+                    //MarkAsAccepted in the field .//*[@id='department']
+
+                    if (SeleniumHelper.IsElementPresent(By.Id("department")))
+                    {
+                        tempInviteStateField = SeleniumHelper.WaitForElement(By.Id("department"));
+                        if (!String.IsNullOrEmpty(tempInviteStateField.Text) == false)
+                        {
+                            tempInviteStateField.SendKeys("Invitation Rejected");
+                            System.Threading.Thread.Sleep(5000);
+                            saveButton = SeleniumHelper.WaitForElement(By.Id("SAVE_HEADER"));
+                            saveButton.Click();
+                        }
+                    }
+                    else
+                    {
+                        return;
+                    }
+                }
+
+            }
+            catch (Exception ex)
+            {
+                return;
+            }
+        }
+
+        public void MarkAsAccepted(PersonTest person)
+        {
+            IWebElement tempInviteStateField, editButton, saveButton;
+
+            browser.SetCurrentWindow(1);
+            browser.CrmNavigateTo(person.crmLink);
+
+            try
+            {
+                editButton = SeleniumHelper.WaitForElement(By.Id("edit_button"));
+                editButton.Click();
+
+                if (SeleniumHelper.IsElementPresent(By.XPath("//*[@id='MassUpdate']/div[1]/p")) == false)
+                {
+
+                    //MarkAsAccepted in the field .//*[@id='department']
+
+                    if (SeleniumHelper.IsElementPresent(By.Id("department")))
+                    {
+                        tempInviteStateField = SeleniumHelper.WaitForElement(By.Id("department"));
+                        if (!String.IsNullOrEmpty(tempInviteStateField.Text) == false)
+                        {
+                            tempInviteStateField.SendKeys("Invitation Accepted");
+                            System.Threading.Thread.Sleep(5000);
+                            saveButton = SeleniumHelper.WaitForElement(By.Id("SAVE_HEADER"));
+                            saveButton.Click();
+                        }
+                    }
+                    else
+                    {
+                        return;
+                    }
+                }
+
+            }
+            catch (Exception ex)
+            {
+                return;
+            }
+        }
+
+        /* FINISH HIM = DEBUG AND FIX
          */
-        public bool CheckUserAccept(PersonTest person)
+        public bool CheckContactAccept(PersonTest person)
         {
             // elLogin, elPassword, signButton добавлены из-за блокировки сессии (Линкедин запрашивает авторизацию перед переходом на страницу юзера для отправки сообщения
             IWebElement elButton, elSubject, elMessage, elSendButton, elCancelButton, elUserName, elPassword, signButton, elLogin;
-            string tmpStr, firstName, lastName, fullName;
-            try
-            {
-                //        // Перейти на страницу пользователя
-                browser.LinkedInNavigateTo(person.linkedinlink);
-                //browser.LinkedInNavigateTo("https://mx.linkedin.com/in/nathan-green-17018a127");
-                // elButton = SeleniumHelper.WaitForElement(By.XPath("//*[@id='tc-actions-send-message']"));
-
-                if (SeleniumHelper.IsElementPresent(By.Id("session_key-login")))
+          
+                try
                 {
-                    SeleniumHelper.WaitForElement(By.Id("session_key-login"));
-                    elLogin = browser.LinkedFindElement(By.Id("session_key-login"));
-                    System.Threading.Thread.Sleep(5000);
-                    elLogin.Clear();
-                    elLogin.SendKeys(Settings.BotSettings.LoginLinkedIn);
-                    SeleniumHelper.WaitForElement(By.XPath(".//*[@id='session_password-login']"));
-                    elPassword = browser.LinkedFindElement(By.XPath(".//*[@id='session_password-login']"));
-                    elPassword.SendKeys(Settings.BotSettings.PasswordLinkedIn);
-                    System.Threading.Thread.Sleep(5000);
-                    SeleniumHelper.WaitForElement(By.Id("btn-primary"));
-                    signButton = browser.LinkedFindElement(By.Id("btn-primary"));
-                    System.Threading.Thread.Sleep(5000);
-                    signButton.Click();
-                    //linkedView.LoginSessionBlocked();
+                    //        // Перейти на страницу пользователя
+                    browser.LinkedInNavigateTo(person.linkedinlink);
+                    //browser.LinkedInNavigateTo("https://mx.linkedin.com/in/nathan-green-17018a127");
+                    // elButton = SeleniumHelper.WaitForElement(By.XPath("//*[@id='tc-actions-send-message']"));
+
+                    if (SeleniumHelper.IsElementPresent(By.Id("session_key-login")))
+                    {
+                        SeleniumHelper.WaitForElement(By.Id("session_key-login"));
+                        elLogin = browser.LinkedFindElement(By.Id("session_key-login"));
+                        System.Threading.Thread.Sleep(5000);
+                        elLogin.Clear();
+                        elLogin.SendKeys(Settings.BotSettings.LoginLinkedIn);
+                        SeleniumHelper.WaitForElement(By.XPath(".//*[@id='session_password-login']"));
+                        elPassword = browser.LinkedFindElement(By.XPath(".//*[@id='session_password-login']"));
+                        elPassword.SendKeys(Settings.BotSettings.PasswordLinkedIn);
+                        System.Threading.Thread.Sleep(5000);
+                        SeleniumHelper.WaitForElement(By.Id("btn-primary"));
+                        signButton = browser.LinkedFindElement(By.Id("btn-primary"));
+                        System.Threading.Thread.Sleep(5000);
+                        signButton.Click();
+
+                    }
+                    else if (SeleniumHelper.IsElementPresent(By.XPath("//*[@id='tc-actions-send-message']")))
+                    //{
+                    //    return false;
+                    //}
+                    //if (SeleniumHelper.IsElementPresent(By.XPath("//*[@id='tc-actions-send-message']")))
+                    {
+                        MarkAsAccepted(person); //AddPersonRecord();
+                        return true;
+                    }
+
+                    //else if (SeleniumHelper.IsElementPresent(By.XPath(".//*[@id='top-card']/div/div[1]/div[2]/div[2]/div[2]/a")))
+                    //{
+                    //    // Follow button - invitation is pending
+                    //    elButton = SeleniumHelper.WaitForElement(By.XPath(".//*[@id='top-card']/div/div[1]/div[2]/div[2]/div[2]/a"));
+                    //    if (elButton.Text == "Follow")
+                    //    {
+                    //        /* TODO implement later
+                    //         * MarkAsPending();
+                    //         */
+                    //    }
+                    //    //Connect button - Invitation is rejected
+                    //    else if (elButton.Text == "Connect")
+                    //    {
+                    //        /* TODO implement later
+                    //         * MarkAsRejected();
+                    //         */
+                    //    }
+
+                    //}
+
+                    else
+                    {
+                        return false;
+                    }
                 }
-                else
+                catch (Exception ex)
                 {
                     return false;
                 }
-                elButton = SeleniumHelper.WaitForElement(By.XPath("//*[@id='tc-actions-send-message']"));
-                if (elButton.Text == "Send a message")
-                {
+               return true;
+                   }
 
-                }
-            
-                else
-                {
-                return false;
-            }
-        }
+
 
 
         //
         public bool SearchContactByName(string userName)
         {
             IWebElement elUserName, elUserSearch;
-            string firstName, lastName; 
-                browser.CrmNavigateTo(GetBaseUrl() + "index.php?module=Contacts&action=index&return_module=Contacts&return_action=DetailView");
-        
+            string firstName, lastName;
+            browser.CrmNavigateTo(GetBaseUrl() + "index.php?module=Contacts&action=index&return_module=Contacts&return_action=DetailView");
+
             try
             {
                 if (SeleniumHelper.IsElementPresent(By.Id("search_name_basic")))
@@ -607,7 +818,7 @@ namespace BotLinkedIn
                         firstName = userName.Split(' ')[0];
                         lastName = userName.Split(' ')[1];
                         elUserName.SendKeys(firstName + " " + lastName);
-                        
+
                     }
                 }
 
@@ -664,7 +875,7 @@ namespace BotLinkedIn
                     {
                         firstCrmName = SeleniumHelper.WaitForElement(By.XPath("//*[@id='first_name']"));
                         firstName.Equals(firstCrmName);
-                        
+
                         //заполняем поле страна и сохраняем
 
                         if (SeleniumHelper.IsElementPresent(By.Id("description")))
@@ -687,13 +898,13 @@ namespace BotLinkedIn
             }
             catch (Exception ex)
             {
-                return;
-                {
-
-                }
 
             }
+            return;
         }
     }
 }
+    
+    
+
    
