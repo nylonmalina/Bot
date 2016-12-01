@@ -2,6 +2,7 @@
 using OpenQA.Selenium.Interactions;
 using System;
 using System.Collections.Generic;
+using OpenQA.Selenium.Remote;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -13,6 +14,7 @@ namespace BotLinkedIn
      * Класс реализующий работу с сервером http://www.linkedin.com 
      * 
      */
+
     internal struct DataIn
     {
         internal string curIndustry;
@@ -24,17 +26,19 @@ namespace BotLinkedIn
         internal string eLinkPage;
         internal string eSummary;
         internal string messageText;
+        internal string userCountry;
         internal bool isMessageSend;
     }
 
-  
+
+
     //class CrmHelper
     //{
     //    private Browser browser = Browser.Instance;
     //    private List<PersonTest> personList = new List<PersonTest>();
 
 
-        class LinkedHelper
+    class LinkedHelper
     {
         private Browser browser = Browser.Instance;
         private List<DataIn> data = new List<DataIn>();
@@ -75,6 +79,18 @@ namespace BotLinkedIn
             return;
         }
 
+        //        public void SearchUserCountry ()
+        //        {
+        //            UserCred testcred = new UserCred();
+        //            testcred.email = "i.rebenok@argus-soft.net";
+        //            testcred.password = "Iv@N5434LokC";
+        //            testcred.index = 1;
+
+        //{
+        //    new Account("i.rebenok@argus-soft.net", "Iv@N5434LokC", 1),    // Create a new account
+        //    new Account("cfilimonchuk1@gmail.com", "lin147258", 2)    // Create another account
+        //};
+        //        }
 
 
 
@@ -114,9 +130,10 @@ namespace BotLinkedIn
          * Наколение контактов с текущей страницы
          * 
          */
+        //так вообще не работает
         public void ParseSearchInfoPage()
         {
-            string t1;
+            string t1, t2;
             DataIn tst = new DataIn(); ;
 
             for (int e = 1; e < 10; e++)
@@ -139,11 +156,30 @@ namespace BotLinkedIn
                         // Сохраняем для последующей работы
                         data.Add(tst);
                     }
+                    //var element2 = SeleniumHelper.WaitForElement(By.XPath("//*[@id='results']/li[" + e.ToString() + "]/div/div[3]/a"));
+                    else if (element.Text == "Message")
+                    {
+                        t1 = "//*[@id='results']/li[" + e.ToString() + "]/div/h3/a";
+                        var element1 = SeleniumHelper.WaitForElement(By.XPath(t1));
+                        tst.urlPath = element1.GetAttribute("href").ToString();
+                        tst.fullName = element1.Text;
+                        tst.eUserName = "";
+                        tst.eLinkPage = "";
+                        tst.eSummary = "";
+                        tst.curIndustry = curIndustry;
+                        t2 = ".//*[@id='results']/li[" + e.ToString() + "]/div/dl/dd[1]/bdi";
+                        var element3 = SeleniumHelper.WaitForElement(By.XPath(t2));
+                        tst.userCountry = element3.Text;
+
+                        // Сохраняем для последующей работы
+                        data.Add(tst);
+                    }
+
+
+                    return;
                 }
             }
-            return;
         }
-
         /*
          *  Отсылка запроса на добавлениие нового пользователя
          * 
@@ -359,7 +395,7 @@ namespace BotLinkedIn
                         locUrl = BuildSearchURL(tmpStr, Settings.BotSettings.Position[k], Settings.BotSettings.Country[j]);
                         // Очистить список
                         data.Clear();
-                        // Выполнить поиск
+                         //Выполнить поиск
                         browser.LinkedInNavigateTo(locUrl);
                         SeleniumHelper.WaitForElement(By.Id("srp_container"));
                         cnt++;
@@ -520,152 +556,269 @@ namespace BotLinkedIn
             return;
         }
 
-        //public interface Users : ICollection<Users>
-        //{
-        //   string Country { get; set; }
-
-        //   int UsersCount { get; set; }
-
-        //               }
-
-        public class Account    // Stores the email and password of each account
+        
+        ///*
+        //*Получаем ссылку на профиль для поиска в CRM
+        //* 
+        //*/
+        public void ParseSearchResult()
         {
-            public string Email;
-            public string Password;
-            int Index;
-            private Browser browser = Browser.Instance;
-          
-            public Account(string email, string password, int index)    // Constructor
-            {
-                Email = email;
-                Password = password;
-                Index = index;
-                    }
-            public void SetCrmHelper(CrmHelper view)
-            {
-                crmView = view;
-                return;
-            }
-            //}
-            // Keep all the accounts in one place
-            List<Account> testAccounts = new List<Account>()
-{
-    new Account("ary@argus-soft.net", "rufus279", 1),    // Create a new account
-    new Account("cfilimonchuk1@gmail.com", "lin147258", 2)    // Create another account
-};
-            List<Account> botAccounts = new List<Account>()
-{
-    new Account("i.rebenok@argus-soft.net", "Iv@N5434LokC", 1),
-    new Account("a.veresova@argus-soft.net", "@nGeL@43FtHe", 2),
-    new Account("v.prolesok@argus-soft.net", "VikT0R830HbNmD", 3),
-    new Account("a.rumina@argus-soft.net","@nN@8971SVxAP", 4),
-    new Account("e.solonicina@argus-soft.net", "ElEn@0954VbEf", 5),
-    new Account("m.sergievsky@argus-soft.net", "mich@el523GhYd", 6),
-    new Account("a.kashina@argus-soft.net", "arigato1", 7),
-    //new Account("vikki.sales87@gmail.com", "DbRN0HbZ777")
-};
-            public void LoginAllBots()
-            {
+            string t1, t2, t3, t4;
 
-                foreach (Account account in testAccounts)
+            DataIn tst = new DataIn();
+
+            for (int e = 1; e < 10; e++)
+            {       
+                 t2 = ".//*[@id='results']/li/div/div[4]/a";
+                var element2 = SeleniumHelper.WaitForElement(By.XPath(t2));
+                if (SeleniumHelper.IsElementPresent(By.XPath(t2)) == true)
                 {
-                    browser.LinkedInNavigateTo("https://www.linkedin.com/uas/login?goback=&trk=hb_signin");
-                    SeleniumHelper.WaitForElement(By.Id("session_key-login"));
-                    var element = browser.LinkedFindElement(By.Id("session_key-login"));
-                    System.Threading.Thread.Sleep(5000);
-                    element.Clear();
-                    element.SendKeys(account.Email);
-                    System.Threading.Thread.Sleep(1000);
-                    SeleniumHelper.WaitForElement(By.Id("session_password-login"));
-                    element = browser.LinkedFindElement(By.Id("session_password-login"));
-                    System.Threading.Thread.Sleep(5000);
-                    element.Clear();
-                    element.SendKeys(account.Password);
-                    System.Threading.Thread.Sleep(1000);
-                    SeleniumHelper.WaitForElement(By.Id("btn-primary"));
-                    element = browser.LinkedFindElement(By.Id("btn-primary"));
-                    System.Threading.Thread.Sleep(5000);
-                    element.Click();
-                    // do search
-                    SearchByCountry();
-                    //logout
-                    Actions actions = new Actions(browser.driver);
-                    SeleniumHelper.WaitForElement(By.XPath(".//*[@id='img-defer-id-1-61312']"));
-                    element = browser.LinkedFindElement(By.XPath(".//*[@id='img-defer-id-1-61312']"));
-                    System.Threading.Thread.Sleep(5000);
-                    actions.MoveToElement(element);
-                    SeleniumHelper.WaitForElement(By.XPath(".//*[@id='account-sub-nav']/div/div[2]/ul/li[1]/div/span/span[3]"));
-                    element = browser.LinkedFindElement(By.XPath(".//*[@id='account-sub-nav']/div/div[2]/ul/li[1]/div/span/span[3]"));
-                    System.Threading.Thread.Sleep(5000);
-                    actions.MoveToElement(element);
-                    actions.Click().Build().Perform();
-
+                    if (element2.Text == "Message")
+                    {
+                        t1 = ".//*[@id='results']/li/div/h3/a";
+                        var element1 = SeleniumHelper.WaitForElement(By.XPath(t1));
+                        tst.urlPath = element1.GetAttribute("href").ToString();
+                        tst.fullName = element1.Text;
+                        tst.eUserName = "";
+                        tst.eLinkPage = "";
+                        t3 = ".//*[@id='results']/li/div/dl/dd[1]/bdi";
+                        var element3 = SeleniumHelper.WaitForElement(By.XPath(t3));
+                        tst.userCountry = element3.Text;
+                        var element5 = SeleniumHelper.WaitForElement(By.XPath(".//*[@id='results']/li/div/dl/dd[2]"));
+                        tst.curIndustry = element5.Text;
+                    // Сохраняем для последующей работы
+                    data.Add(tst);
+                    }
                 }
-            }
-                //Получение
-            public void SearchByCountry()
-            {
-                // список/словарь для хранения пользователей 
-                Dictionary<string, int> users = new Dictionary<string, int >();
-                String searchUrl = "https://www.linkedin.com/vsearch/p?type=people&orig=FCTD&rsid=5225796901475164704017&pageKey=oz-winner&trkInfo=tarId%3A1475153538610&trk=global_header&search=Search&f_G=ch%3A4938,ch%3A4930,ch%3A4928,ch%3A4929,ch%3A4935,ch%3A4937,ch%3A4932,ch%3A4934,ch%3A4936,de%3A4953,de%3A4966,de%3A5000,de%3A4944,de%3A4977,de%3A5026,de%3A5007,de%3A4980,de%3A4998&openFacets=N,G,CC&f_N=F";
-                IWebElement country, count, linkName; // если заработает добавить элементы для сравнения с контактами в CRM
-                int i, k, userCount, userCountUpd, curUserCount, botIndex, cntPage, allRecord, j, l;
-                cntPage = 0;
-                allRecord = 0;
-                String userCountry, userCounts;
-                botIndex = Index;
 
-                browser.LinkedInNavigateTo(searchUrl); //переходим на страницу поиска с нужными странами
-                j = 11;
-                for (i = 2, k = 2; i <= 19; i++, k++)
+
+                else if (SeleniumHelper.IsElementPresent(By.XPath("//*[@id='results']/li[1]/div/div[4]/a")) == true)
                 {
-                    try
+                //for (int e = 1; e < 10; e++)
+                //{
+                    var element1 = SeleniumHelper.WaitForElement(By.XPath("//*[@id='results']/li[" + e.ToString() + "]/div/div[4]/a"));
+                    if (element1.Text == "Message")
                     {
-                        // Получаем данные location начало - .//*[@id='facet-G']/fieldset/div/ol/li[2]/div/label/bdi, конец - .//*[@id='facet-G']/fieldset/div/ol/li[19]/div/label/bdi
-                        //"//*[@id='message-list']/form/ol/li[" + i.ToString() + "]/div/div[2]/p/a"
-                        country = SeleniumHelper.WaitForElement(By.XPath(".//*[@id='facet-G']/fieldset/div/ol/li[" + i.ToString() + "]/div/label/bdi"));
-                        userCountry = country.GetAttribute("title");
-                            //Получаем данные count начало - .//*[@id='facet-G']/fieldset/div/ol/li[2]/div/span, конец - .//*[@id='facet-G']/fieldset/div/ol/li[19]/div/span
-                            count = SeleniumHelper.WaitForElement(By.XPath(".//*[@id='facet-G']/fieldset/div/ol/li[" + k.ToString() + "]/div/span"));
-                            userCounts = count.GetAttribute("facet-count");
-                            userCount = Int32.Parse(userCounts);
-                            users.TryGetValue(userCountry, out curUserCount);
-                            userCountUpd = 0;
-                        //Проверяем есть ли контакт в CRM
-                        if (userCount != 0)
-                        {
-                            for (l = 1; l < 11; l++)
-                            {
-                                linkName = SeleniumHelper.WaitForElement(By.XPath(".//*[@id='results']/li[" + l.ToString() + "]/div/h3/a"));
-                                crmView.SetSearchMode(0);
-                            }
-                            if (botIndex >= 2 && users.ContainsKey(userCountry) == true)
-                            {
-                                userCount = userCountUpd + curUserCount;
-                            }
-                        // Переход на следующую страницу
-                        j += 10;
-                        cntPage++;
-                        // Это последняя страница?
-                        if (cntPage == 35)
-                            break;
-                        tmpString = "inbox/#sent?startRow=" + j.ToString() + "&subFilter=invitation&keywords=&sortBy=";
-                        urlStr = "https://www.linkedin.com/" + tmpString;
-                        crm                    }
-                            users.Add(userCountry, userCount);
-                    }
-                    catch (Exception ex)
-                    {
-                        return;
-                    }
-                       
+                        t1 = "//*[@id='results']/li[" + e.ToString() + "]/div/h3/a";
+                          var  element4 = SeleniumHelper.WaitForElement(By.XPath(t1));
+                        tst.urlPath = element4.GetAttribute("href").ToString();
+                        tst.fullName = element4.Text;
+                        tst.eUserName = "";
+                        tst.eLinkPage = "";
+                        t2 = ".//*[@id='results']/li[" + e.ToString() + "]/div/dl/dd[1]/bdi";
+                        var element3 = SeleniumHelper.WaitForElement(By.XPath(t2));
+                        tst.userCountry = element3.Text;
+                        t4 = ".//*[@id='results']/li[" + e.ToString() + "]/div/dl/dd[2]";
+                        element4 = SeleniumHelper.WaitForElement(By.XPath(t4));
+                        tst.curIndustry = element4.Text;
+                        // Сохраняем для последующей работы
+                        data.Add(tst);
 
-                    return;
+                    }
+                   return;
                 }
             }
         }
+    public bool GetProfileLink(ref DataIn curData)
+        {
+            IWebElement elButton;
+            string tmpObj;
+           
+                    browser.LinkedInNavigateTo(curData.urlPath);
+            try
+            {
+                if (SeleniumHelper.IsElementPresent(By.XPath("//*[@id='top-card']/div/div[1]/div[2]/div[2]/div[2]/a")))
+                {
+                    elButton = SeleniumHelper.WaitForElement(By.XPath("//*[@id='top-card']/div/div[1]/div[2]/div[2]/div[2]/a"));
+                }
+                else
+                {
+                    if (SeleniumHelper.IsElementPresent(By.XPath("//*[@id='top-card']/div/div[1]/div/div[2]/div[2]/a")))
+                    {
+                        elButton = SeleniumHelper.WaitForElement(By.XPath("//*[@id='top-card']/div/div[1]/div/div[2]/div[2]/a"));
+                    }
+                    else
+                    {
+                        if (SeleniumHelper.IsElementPresent(By.XPath("//*[@id='top-card']/div/div[1]/div/div[2]/div[2]/div/a")))
+                        {
+                            elButton = SeleniumHelper.WaitForElement(By.XPath("//*[@id='top-card']/div/div[1]/div/div[2]/div[2]/div/a"));
+                        }
+                        else
+                        {
+                            return false;
+                        }
+                    }
+                }
+                tmpObj = "0";
+            }
+            catch (Exception ex)
+            {
+                // Кнопка не найдена
+                return false;
+            }
+            try
+            {
+                if (elButton.Text == "Send a message")
+                {
+                    curData.eUserName = "";
+                    curData.eHeadLine = "";
+                    curData.eLinkPage = "";
 
+
+                    curData.eUserName = SeleniumHelper.WaitForElement(By.XPath("//*[@id='name']/h1/span/span[1]")).Text;
+                    curData.eHeadLine = SeleniumHelper.WaitForElement(By.XPath("//*[@id='headline']/p")).Text;
+                    if (SeleniumHelper.IsElementPresent(By.XPath("//*[@id='top-card']/div/div[2]/div[2]/ul/li/dl/dd/a")))
+                    {
+                        curData.eLinkPage = SeleniumHelper.WaitForElement(By.XPath("//*[@id='top-card']/div/div[2]/div[2]/ul/li/dl/dd/a")).Text;
+                        tmpObj = "1";
+                    }
+                    else
+                    {
+                        //*[@id='top-card']/div/div[2]/div/ul/li/dl/dd/a
+                        if (SeleniumHelper.IsElementPresent(By.XPath("//*[@id='top-card']/div/div[2]/div/ul/li/dl/dd/a")))
+                        {
+                            curData.eLinkPage = SeleniumHelper.WaitForElement(By.XPath("//*[@id='top-card']/div/div[2]/div/ul/li/dl/dd/a")).Text;
+                            tmpObj = "2";
+                        }
+                        else
+                        {
+                            ;
+                        }
+                    }
+                    if (SeleniumHelper.IsElementPresent(By.XPath("//*[@id='background']")))
+                    {
+                        curData.eSummary = SeleniumHelper.WaitForElement(By.XPath("//*[@id='background']")).Text.ToString();
+                    }
+
+                }
+            }
+            catch (Exception ex)
+            {
+                return false;
+            }
+            //if (curData.eLinkPage == "")
+                return true;
+        }
+
+        /*
+             * Обработка информации запроса c добавлением страны в CRM
+             * 
+             * 
+             */
+        public void ParseResult()
+        {
+            int i, m;
+            string pageUrl;
+            string tmp;
+            DataIn curData;
+            List<DataIn> Users = new List<DataIn>();
+            List<string> pages = new List<string>();
+
+            pages.Clear();
+            //ParseSearchInfoPage();
+            ParseSearchResult();
+            for (i = 2; i < 11; i++)
+            {
+                pageUrl = "//*[@id='results-pagination']/ul/li[" + i.ToString() + "]/a";
+                if (SeleniumHelper.IsElementPresent(By.XPath(pageUrl)) == true)
+                {
+                    var element = SeleniumHelper.WaitForElement(By.XPath(pageUrl));
+                    tmp = element.GetAttribute("href");
+                    // Добавить страницу для последующих поисков контакта
+                    pages.Add(tmp);
+                }
+            }
+            // Обрабатываем  следующие страницы для добавления
+            for (i = 0; i < pages.Count; i++)
+            {
+                tmp = pages[i];
+                browser.LinkedInNavigateTo(tmp);
+                if (SeleniumHelper.IsElementPresent(By.Id("srp_container")) == true)
+                {
+                    ParseSearchResult();
+                    //ParseSearchInfoPage();
+                    System.Threading.Thread.Sleep(5000);
+                }
+            }
+
+            crmView.SetSearchMode(0);
+            // Осуществить проход по страницам пользователей
+            for (m = 0; m < data.Count; m++)
+            {
+                curData = data[m];
+                // if ((GetProfileLink(ref curData) == true) && (crmView.SearchContact(curData.fullName, curData.eLinkPage) == true))
+                if ((GetProfileLink(ref curData) == true))
+                {
+                    if (crmView.SearchContact(curData.fullName, curData.eLinkPage) == true)
+                    {
+                        // Такой контакт уже существует
+
+                        //    //добавить страну в CRM
+                        //    crmView.AddUserCountry(curData.fullName, curData.userCountry);
+                        //    Users.Add(curData);
+                        //    continue;
+                        //}
+                        //else
+                        //{
+                        //    crmView.CreateNewUserRecord(curData);
+                        //    crmView.SearchContact(curData.fullName, curData.eLinkPage);
+                        //    crmView.AddUserCountry(curData.fullName, curData.userCountry);
+                        //    Users.Add(curData);
+                        //}
+                        //    System.Threading.Thread.Sleep(60000);
+                        //    i++;
+                        //}
+
+                    }
+                    // выводим список
+                    foreach (DataIn item in Users)
+                        Console.WriteLine(item);
+                    Console.ReadLine();
+
+
+                    return;
+
+                }
+            }
+        }
+       
+  
+
+         ///*
+            //* Поиск контактов по стране
+            //* 
+            //*/
+        public void SearchByCountry()
+{
+    int j, k, m;
+    int cnt = 0;
+
+    string locUrl = "https://www.linkedin.com/vsearch/p?f_N=F,A&rsid=3858883691477677585309&openFacets=N,G,CC&f_G=va%3A0&orig=FCTD";
+    //string strUrl;
+    DataIn curData;
+
+    //Обход по странам
+    browser.LinkedInNavigateTo(locUrl);
+    SeleniumHelper.WaitForElement(By.Id("srp_container"));
+    cnt++;
+            //Разобрать результаты поиска
+            //ParseSearchInfoPage();
+           // ParseSearchResult();
+            //Получить ссылку со страницы и страну в ParseResult
+
+            //Разобрать полученный результат
+            ParseResult();
+             //Вывести список
+            //MessageBox.Show("Name: " + user.name + Environment.NewLine + "Email: " + user.email + Environment.NewLine + "Age: " + user.age + Environment.NewLine);
+            // Console.WriteLine(curData.ToString());
+             System.Threading.Thread.Sleep(15000);
+            }        
+          }
     }
-}
+//}
+        
 
 
+
+
+   

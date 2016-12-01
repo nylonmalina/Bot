@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using OpenQA.Selenium;
+using OpenQA.Selenium.Remote;
 using OpenQA.Selenium.Support.UI;
 using OpenQA.Selenium.Interactions;
 
@@ -83,6 +84,29 @@ namespace BotLinkedIn
             wait.PollingInterval = TimeSpan.FromSeconds(Settings.Selenium.PollingInterval);
             wait.Until(d => condition());
         }
-     
-           }
-}
+
+        public static void WaitForPageToBeReady()
+        {
+            IJavaScriptExecutor js = (IJavaScriptExecutor)browser.Driver();
+
+            //This loop will rotate for 100 times to check If page Is ready after every 1 second.
+            //You can replace your if you wants to Increase or decrease wait time.
+            for (int i = 0; i < 400; i++)
+            {
+                try
+                {
+                    System.Threading.Thread.Sleep(1000);
+                }
+                catch (Exception ex) { }
+                //To check page ready state.
+
+                if (js.ExecuteScript("return document.readyState").ToString().Equals("complete"))
+                {
+                    break;
+                }
+            }
+        }
+
+        }
+
+    }

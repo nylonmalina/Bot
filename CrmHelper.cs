@@ -37,6 +37,7 @@ namespace BotLinkedIn
         private Browser browser = Browser.Instance;
         private List<PersonTest> personList = new List<PersonTest>();
         private List<PersonTest> personListUpd = new List<PersonTest>();
+        private static Random randomGenerator;
         // private List<PersonIn> personList = new List<PersonIn>();
 
         private string GetBaseUrl()
@@ -570,8 +571,8 @@ namespace BotLinkedIn
             for (i = 0; i < personList.Count(); i++)
             {
 
-                //VeryfiUserList(personList[i]);
-               CheckContactAccept(personList[i]);
+                VeryfiUserList(personList[i]);
+               //CheckContactAccept(personList[i]);
                
             }
             //int j = 0;
@@ -692,7 +693,7 @@ namespace BotLinkedIn
                         tempInviteStateField = SeleniumHelper.WaitForElement(By.Id("department"));
                         //tempInviteStateField.Clear();
                         //System.Threading.Thread.Sleep(5000);
-                        tempInviteStateField.SendKeys("Invitation is Accepted");
+                       // tempInviteStateField.SendKeys("Invitation is Accepted");
                         Debug.WriteLine("Invitation is Accepted");
                         //System.Threading.Thread.Sleep(5000);
                         //saveButton = SeleniumHelper.WaitForElement(By.Id("SAVE_HEADER"));
@@ -762,33 +763,32 @@ namespace BotLinkedIn
         {
             // elLogin, elPassword, signButton добавлены из-за блокировки сессии (Линкедин запрашивает авторизацию перед переходом на страницу юзера для отправки сообщения
             IWebElement elPassword, signButton, elLogin, elButton;
-          
+
 
 
             try
             {
                 //        // Перейти на страницу пользователя
-                browser.LinkedInNavigateTo(person.linkedinlink);
+                //browser.LinkedInNavigateTo(person.linkedinlink);
                 //browser.LinkedInNavigateTo("https://mx.linkedin.com/in/nathan-green-17018a127");
                 // elButton = SeleniumHelper.WaitForElement(By.XPath("//*[@id='tc-actions-send-message']"));
-
-                while (SeleniumHelper.IsElementPresent(By.XPath(".//*[@id='name']/h1/span/span")))
-                {
+                SeleniumHelper.WaitForElement(By.Id("copyright"));
+              
 
                     if (SeleniumHelper.IsElementPresent(By.XPath("//*[@id='tc-actions-send-message']")))
                     {
-                        MarkAsAccepted(person); //AddPersonRecord();
+                        MarkAsAccepted(person); 
                         return true;
                     }
-                        if (SeleniumHelper.IsElementPresent(By.XPath(".//*[@id='top-card']/div/div[1]/div/div[2]/div[2]/a")))
+                    else if (SeleniumHelper.IsElementPresent(By.XPath(".//*[@id='top-card']/div/div[1]/div/div[2]/div[2]/a")))
                         {
-                            MarkAsAccepted(person); //AddPersonRecord();
+                            MarkAsRejected(person); //AddPersonRecord();
                         return true;
                     
                         }
 
                     else if (SeleniumHelper.IsElementPresent(By.XPath(".//*[@id='top-card']/div/div[1]/div[2]/div[2]/div[2]/a")))
-                    {
+                         {
                         // Follow button - invitation is pending
                         elButton = SeleniumHelper.WaitForElement(By.XPath(".//*[@id='top-card']/div/div[1]/div[2]/div[2]/div[2]/a"));
                         if (elButton.Text == "Follow" || elButton.Text == "Invitation is pending")
@@ -815,80 +815,131 @@ namespace BotLinkedIn
                             return true;
                         }
 
-                    }
-                    else if (SeleniumHelper.IsElementPresent(By.XPath(".//*[@id='tc-actions-send-inmail']")))
-                    {
+                     else if (SeleniumHelper.IsElementPresent(By.XPath(".//*[@id='tc-actions-send-inmail']")))
+                        {
                         MarkAsRejected(person);
                         return true;
 
-                    }
+                        }
 
                     else
                     {
-
-
-                        while (SeleniumHelper.IsElementPresent(By.Id("session_key-login")))
-                        {
-                            SeleniumHelper.WaitForElement(By.Id("session_key-login"));
-                            elLogin = browser.LinkedFindElement(By.Id("session_key-login"));
-                            System.Threading.Thread.Sleep(5000);
-                            elLogin.Clear();
-                            elLogin.SendKeys(Settings.BotSettings.LoginLinkedIn);
-                            SeleniumHelper.WaitForElement(By.XPath(".//*[@id='session_password-login']"));
-                            elPassword = browser.LinkedFindElement(By.XPath(".//*[@id='session_password-login']"));
-                            elPassword.SendKeys(Settings.BotSettings.PasswordLinkedIn);
-                            System.Threading.Thread.Sleep(5000);
-                            SeleniumHelper.WaitForElement(By.Id("btn-primary"));
-                            signButton = browser.LinkedFindElement(By.Id("btn-primary"));
-                            System.Threading.Thread.Sleep(5000);
-                            signButton.Click();
-                            //System.Threading.Thread.Sleep(5000);
-
-                        }
-
-                        //неправильная ссылка в линкедин 404 
-                        while (SeleniumHelper.IsElementPresent(By.XPath(".//*[@id='pagekey-nprofile-public-not-found']")))
-                        {
-                            UpdateLinkUrl(person);
-                            Debug.WriteLine("Link is Updated!");
-                            //browser.SetCurrentWindow(1);
-                            //browser.CrmNavigateTo(person.crmLink);
-                            //personUpd.crmLink = person.crmLink;
-                            //personUpd.linkedinlink = SeleniumHelper.WaitForElement(By.XPath("//*[@id='social_nework_url_c']")).Text;
-                            //personListUpd.Add(personUpd);
-
-                            //personList.Remove(person);
-                            //personList.Add(person);
-                            return true;
-                        }
-                        while (SeleniumHelper.IsElementPresent(By.XPath(".//*[@id='wiper']")))
-                        {
-                            linkedView.Login();
-                            browser.LinkedInNavigateTo(person.linkedinlink);
-                            System.Threading.Thread.Sleep(5000);
-                        }
-                        //главная
-                        while (SeleniumHelper.IsElementPresent(By.XPath(".//*[@id='regForm']")))
-                        {
-                            linkedView.Login();
-                            browser.LinkedInNavigateTo(person.linkedinlink);
-                            System.Threading.Thread.Sleep(5000);
-                        }
-
-                        return false;
+                           return false;
                     }
-                }
+                    }
             }
-            
+
             catch (Exception ex)
             {
                 return false;
             }
+            return true;
+        }
+            
+
+    public bool IsSessionBlocked(PersonTest person)
+    {
+        IWebElement elPassword, signButton, elLogin, elButton;
+            if (SeleniumHelper.IsElementPresent(By.Id("session_key-login")))
+                        {
+                            return true;
+
+                        }
+
+                        //неправильная ссылка в линкедин 404 
+            else if (SeleniumHelper.IsElementPresent(By.XPath(".//*[@id='pagekey-nprofile-public-not-found']")))
+                        {
+                        //    UpdateLinkUrl(person);
+                        //    Debug.WriteLine("Link is Updated!");
+                           
+                                       return true;
+                        }
+            else if (SeleniumHelper.IsElementPresent(By.XPath(".//*[@id='wiper']")))
+                        {
+                            //linkedView.Login();
+                            //browser.LinkedInNavigateTo(person.linkedinlink);
+                            //System.Threading.Thread.Sleep(5000);
+                            return true;
+                        }
+                        //главная
+            else if (SeleniumHelper.IsElementPresent(By.XPath(".//*[@id='regForm']")))
+                        {
+                            //linkedView.Login();
+                            //browser.LinkedInNavigateTo(person.linkedinlink);
+                            //System.Threading.Thread.Sleep(5000);
+                            return true;
+                        }
+            else if (SeleniumHelper.IsElementPresent(By.Id("uno-reg-join")))
+            {
                 return true;
+            }
+
+            else
+            {
+                return false;
+            }
+    }
+
+    public void LoginSessionBlocked(PersonTest person)
+    {
+        IWebElement elPassword, signButton, elLogin, elButton;
+        if (SeleniumHelper.IsElementPresent(By.Id("session_key-login")))
+        {
+
+            SeleniumHelper.WaitForElement(By.Id("session_key-login"));
+            elLogin = browser.LinkedFindElement(By.Id("session_key-login"));
+            System.Threading.Thread.Sleep(5000);
+            elLogin.Clear();
+            elLogin.SendKeys(Settings.BotSettings.LoginLinkedIn);
+            System.Threading.Thread.Sleep(5000);
+            SeleniumHelper.WaitForElement(By.XPath(".//*[@id='session_password-login']"));
+            elPassword = browser.LinkedFindElement(By.XPath(".//*[@id='session_password-login']"));
+            elPassword.SendKeys(Settings.BotSettings.PasswordLinkedIn);
+            System.Threading.Thread.Sleep(5000);
+            SeleniumHelper.WaitForElement(By.Id("btn-primary"));
+            signButton = browser.LinkedFindElement(By.Id("btn-primary"));
+            System.Threading.Thread.Sleep(5000);
+            signButton.Click();
+             
+            SeleniumHelper.WaitForPageToBeReady();
+            
+
         }
 
+                    //неправильная ссылка в линкедин 404 
+        else if (SeleniumHelper.IsElementPresent(By.XPath(".//*[@id='pagekey-nprofile-public-not-found']")))
+        {
+            UpdateLinkUrl(person);
+            Debug.WriteLine("Link is Updated!");
+            //browser.SetCurrentWindow(1);
+            //browser.CrmNavigateTo(person.crmLink);
+            //personUpd.crmLink = person.crmLink;
+            //personUpd.linkedinlink = SeleniumHelper.WaitForElement(By.XPath("//*[@id='social_nework_url_c']")).Text;
+            //personListUpd.Add(personUpd);
 
-
+            //personList.Remove(person);
+            //personList.Add(person);
+              }
+        else if (SeleniumHelper.IsElementPresent(By.XPath(".//*[@id='wiper']")))
+        {
+            linkedView.Login();
+            browser.LinkedInNavigateTo(person.linkedinlink);
+            System.Threading.Thread.Sleep(5000);
+        }
+        //главная
+        else if (SeleniumHelper.IsElementPresent(By.XPath(".//*[@id='regForm']")))
+        {
+            linkedView.Login();
+            browser.LinkedInNavigateTo(person.linkedinlink);
+            System.Threading.Thread.Sleep(5000);
+        }
+        else if (SeleniumHelper.IsElementPresent(By.XPath("uno-reg-join")))
+        {
+            linkedView.Login();
+            browser.LinkedInNavigateTo(person.linkedinlink);
+            System.Threading.Thread.Sleep(5000);
+        }
+    }
 
 
         //
@@ -916,7 +967,10 @@ namespace BotLinkedIn
 
                 browser.LinkedInNavigateTo(searchUrl);
                 //логин при блокировке сессии 
-             
+                if (IsSessionBlocked(person))
+                {
+                    LoginSessionBlocked(person);
+                }
                      if (SeleniumHelper.IsElementPresent(By.XPath(".//*[@id='results']/li[2]/div/h3/a")))
                     {
                         linkName = SeleniumHelper.WaitForElement(By.XPath(".//*[@id='results']/li[2]/div/h3/a"));
@@ -930,104 +984,30 @@ namespace BotLinkedIn
                         //{
                         browser.LinkedInNavigateTo(linkName.GetAttribute("href"));
                         System.Threading.Thread.Sleep(5000);
-
+                         if (IsSessionBlocked(person))
+                         { 
+                             LoginSessionBlocked(person);
+                         }
+                     }
                         if (SeleniumHelper.IsElementPresent(By.XPath(".//*[@id='top-card']/div/div[2]/div[2]/ul/li[1]/dl/dd/a")))
                         {
                             linkUrl = SeleniumHelper.WaitForElement(By.XPath(".//*[@id='top-card']/div/div[2]/div[2]/ul/li[1]/dl/dd/a"));
                             urlLink = linkUrl.GetAttribute("href").ToString();
                             Debug.WriteLine(urlLink);
 
-                            //browser.SetCurrentWindow(1);
-                            //browser.CrmNavigateTo(person.crmLink);
-                            //System.Threading.Thread.Sleep(5000);
-
-                            //if (SeleniumHelper.IsElementPresent(By.XPath(".//*[@id='edit_button']")))
-                            //{
-                            //    editButton = SeleniumHelper.WaitForElement(By.XPath(".//*[@id='edit_button']"));
-                            //    editButton.Click();
-                            //    System.Threading.Thread.Sleep(5000);
-                            //    element = SeleniumHelper.WaitForElement(By.XPath("//*[@id='social_nework_url_c']"));
-                            //    element.Clear();
-                            //    element.SendKeys(urlLink);
-                            //    System.Threading.Thread.Sleep(5000);
-                            //    saveButton = SeleniumHelper.WaitForElement(By.Id("SAVE_HEADER"));
-                            //    System.Threading.Thread.Sleep(5000);
-                            //    saveButton.Click();
-
-
-                            //}
                         }
                         else if (SeleniumHelper.IsElementPresent(By.XPath(".//*[@id='top-card']/div/div[2]/div/ul/li[1]/dl/dd/a")))
                         {
                             linkUrl = SeleniumHelper.WaitForElement(By.XPath(".//*[@id='top-card']/div/div[2]/div/ul/li[1]/dl/dd/a"));
                             urlLink = linkUrl.GetAttribute("href").ToString();
                             Debug.WriteLine(urlLink);
-                            //browser.SetCurrentWindow(1);
-                            //browser.CrmNavigateTo(person.crmLink);
-                            //System.Threading.Thread.Sleep(5000);
-
-                            //if (SeleniumHelper.IsElementPresent(By.XPath(".//*[@id='edit_button']")))
-                            //{
-                            //    editButton = SeleniumHelper.WaitForElement(By.XPath(".//*[@id='edit_button']"));
-                            //    editButton.Click();
-                            //    System.Threading.Thread.Sleep(5000);
-                            //    element = SeleniumHelper.WaitForElement(By.XPath("//*[@id='social_nework_url_c']"));
-                            //    element.Clear();
-                            //    element.SendKeys(urlLink);
-                            //    System.Threading.Thread.Sleep(5000);
-                            //    saveButton = SeleniumHelper.WaitForElement(By.Id("SAVE_HEADER"));
-                            //    saveButton.Click();
-                            //    System.Threading.Thread.Sleep(5000);
-
-
-
-                            //}
-
+                           
                         }
 
-                        while (SeleniumHelper.IsElementPresent(By.Id("session_key-login")))
-                        {
-                            SeleniumHelper.WaitForElement(By.Id("session_key-login"));
-                            elLogin = browser.LinkedFindElement(By.Id("session_key-login"));
-                            System.Threading.Thread.Sleep(5000);
-                            elLogin.Clear();
-                            elLogin.SendKeys(Settings.BotSettings.LoginLinkedIn);
-                            SeleniumHelper.WaitForElement(By.XPath(".//*[@id='session_password-login']"));
-                            elPassword = browser.LinkedFindElement(By.XPath(".//*[@id='session_password-login']"));
-                            elPassword.SendKeys(Settings.BotSettings.PasswordLinkedIn);
-                            System.Threading.Thread.Sleep(5000);
-                            SeleniumHelper.WaitForElement(By.Id("btn-primary"));
-                            signButton = browser.LinkedFindElement(By.Id("btn-primary"));
-                            System.Threading.Thread.Sleep(5000);
-                            signButton.Click();
-                            //linkedView.LoginSessionBlocked();
-                        }
-
-                        //https://www.linkedin.com/public-profile/internal-server-error
-                        while (SeleniumHelper.IsElementPresent(By.XPath(".//*[@id='wiper']")))
-                        {
-                            linkedView.Login();
-                            browser.LinkedInNavigateTo(searchUrl);
-                        }
-                        //главная
-                        while (SeleniumHelper.IsElementPresent(By.XPath(".//*[@id='regForm']")))
-                        {
-                            linkedView.Login();
-                            browser.LinkedInNavigateTo(searchUrl);
-                        }
-
-                        //searchField = SeleniumHelper.WaitForElement(By.Id("main-search-box"));
-                        //searchField.Clear();
-                        //System.Threading.Thread.Sleep(5000);
-                        //searchField.SendKeys(tmpStr);
-                        //System.Threading.Thread.Sleep(5000);
-                        //searchButton = SeleniumHelper.WaitForElement(By.XPath(".//*[@id='global-search']/fieldset/button"));
-                        //System.Threading.Thread.Sleep(5000);
-                        //searchButton.Click();
-                        //System.Threading.Thread.Sleep(5000);
+                      
 
                         //Если пользователь не найден
-                        while (SeleniumHelper.IsElementPresent(By.Id("pagekey-nprofile-public-not-found")))
+                        if (SeleniumHelper.IsElementPresent(By.Id("pagekey-nprofile-public-not-found")))
                         {
                             MarkAsUnreachableContact(person);
 
@@ -1036,22 +1016,34 @@ namespace BotLinkedIn
                     }
                     //}
                     //CheckContactAccept(person);
-                }
-           
+                          
             //}
             catch (Exception ex)
             {
                 return;
             }
         }
+        //public void VeryfiUserList(PersonTest person)
+        //{
+        //    if (CheckContactAccept(person) == true)
+        //    {
+        //        AddUserCountry(person);
+        //    }
+
+        //}
         public void VeryfiUserList(PersonTest person)
         {
-            if (CheckContactAccept(person) == true)
+            browser.LinkedInNavigateTo(person.linkedinlink);
+            SeleniumHelper.WaitForPageToBeReady();
+            SeleniumHelper.WaitForElement(By.Id("copyright"));
+       
+            if (IsSessionBlocked(person))
             {
-                AddUserCountry(person);
+                LoginSessionBlocked(person);
             }
-
+            CheckContactAccept(person);
         }
+       
 
         public void AddUserCountry(PersonTest person)
         {
