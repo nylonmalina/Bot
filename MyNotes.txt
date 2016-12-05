@@ -1,5 +1,109 @@
+[12.09.2016 17:40:40] Catherine Solomkina (Filimonchuk): cfilimonchuk1@gmail.com/ lin147258
+[12.09.2016 17:40:58] Catherine Solomkina (Filimonchuk): cfilimonchuk4@gmail.com https://www.linkedin.com/in/alexandra-s-i-2256539a
+[12.09.2016 17:41:58] Catherine Solomkina (Filimonchuk): A:  tauris270490@rambler.ru
+p: lin147258 - Kate ??? 1 Sf (Monitor All Messages)
+[12.09.2016 17:42:05] Catherine Solomkina (Filimonchuk): gfhjkm e dct[ jlbyfrjdsq
+[12.09.2016 17:42:12] Catherine Solomkina (Filimonchuk): пароль у всех одинаковый
+[12.09.2016 17:42:22] Catherine Solomkina (Filimonchuk): от мыла пробуй art147258
+
+CRM admin - postmaster@argus.kharkov.ua	
+
 http://www.linkedin.com/vsearch/p?&openAdvancedForm=true&titleScope=CP&locationType=Y&sortBy=R&&f_N=S
 
 export PATH=$PATH:/C:/BotLinkedIn/packages/geckodriver.exe
 
 C:\BotLinkedIn\bin\Debug\geckodriver.exe
+
+search url for Germany6, Switzerland:
+
+https://www.linkedin.com/vsearch/p?type=people&orig=FCTD&rsid=5225796901475164704017&pageKey=oz-winner&trkInfo=tarId%3A1475153538610&trk=global_header&search=Search&f_G=ch%3A4938,ch%3A4930,ch%3A4928,ch%3A4929,ch%3A4935,ch%3A4937,ch%3A4932,ch%3A4934,ch%3A4936,de%3A4953,de%3A4966,de%3A5000,de%3A4944,de%3A4977,de%3A5026,de%3A5007,de%3A4980,de%3A4998&openFacets=N,G,CC&f_N=F
+
+
+
+
+.//*[@id='facet-G']/fieldset/div/ol/li[2]/div/label/bdi
+
+.//*[@id='facet-G']/fieldset/div/ol/li[19]/div/label/bdi
+
+"https://www.linkedin.com/uas/logout?session_full_logout=&csrfToken=ajax%3A3224325045546964722&trk=nav_account_sub_nav_signout"
+
+"https://www.linkedin.com/uas/logout?session_full_logout=&csrfToken=ajax%3A3516286612866499362&trk=nav_account_sub_nav_signout"
+
+]
+
+
+
+
+.//*[@id='results']/li[1]/div/h3/a
+.//*[@id='results']/li[2]/div/h3/a
+
+
+So, as you see I was not able to verify Lithium groups  because I am redirected to production groups or to community ( http://community.whattoexpect.com).   
+The same behavior occurs on web.  When I try to open any groups, I am redirected to production.  When I change environment manually on qa1 in url  I am redirected to community as well. 
+
+Ruby groups that pointed to QA work as expected.
+
+____________________________
+Angela 
+All
+(9)Berlin Area, Germany
+(7)Munich Area, Germany
+(6)Cologne Area, Germany
+(5)Frankfurt Am Main Area, Germany
+(2)Hamburg Area, Germany
+(2)Stuttgart Area, Germany
+(1)Switzerland
+(1)Geneva Area, Switzerland
+(1)Mannheim Area, Germany
+(1)Nurnberg Area, Germany
+
+Viktor
+(4)Cologne Area, Germany
+(3)Berlin Area, Germany
+(1)Geneva Area, Switzerland
+(1)Nurnberg Area, Germany
+
+Anna
+All
+(7)Berlin Area, Germany
+(2)Zurich Area, Switzerland
+(2)Cologne Area, Germany
+(2)Frankfurt Am Main Area, Germany
+(2)Munich Area, Germany
+(1)Ticino, Switzerland
+(1)Mannheim Area, Germany
+(1)Stuttgart Area, Germany
+
+Elena
+All
+(36)Munich Area, Germany
+(26)Cologne Area, Germany
+(20)Frankfurt Am Main Area, Germany
+(13)Stuttgart Area, Germany
+(8)Berlin Area, Germany
+(8)Hamburg Area, Germany
+(6)Nurnberg Area, Germany
+(5)Hannover Area, Germany
+(2)Geneva Area, Switzerland
+(2)Zurich Area, Switzerland
+(1)Ticino, Switzerland
+(1)Mannheim Area, Germany
+
+
+Anastasia
+All
+(25)Berlin Area, Germany
+(21)Munich Area, Germany
+(20)Zurich Area, Switzerland
+(12)Hamburg Area, Germany
+(11)Frankfurt Am Main Area, Germany
+(9)Cologne Area, Germany
+(8)Geneva Area, Switzerland
+(7)Stuttgart Area, Germany
+(4)Mannheim Area, Germany
+(3)Basel Area, Switzerland
+(3)Nurnberg Area, Germany
+(2)Bern Area, Switzerland
+(1)Ticino, Switzerland
+(1)Winterthur Area, Switzerland
+

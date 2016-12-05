@@ -26,6 +26,9 @@ namespace BotLinkedIn
 
         private string handleLinkedIn;
         private string handleCrm;
+       
+
+       
 
         public static Browser Instance
         {
@@ -148,8 +151,8 @@ namespace BotLinkedIn
         {
             FirefoxProfileManager profileManager = new FirefoxProfileManager();
             // Firefox profile name: default, WebDriver,WebLinked
+            //profile = profileManager.GetProfile("Firefox49Marionette");
             profile = profileManager.GetProfile("WebDriver");
-            //profile = profileManager.GetProfile("WebLinked");
 
             profile.AcceptUntrustedCertificates = true;
             profile.EnableNativeEvents = true;
@@ -157,7 +160,7 @@ namespace BotLinkedIn
             log.Info("Profile inited:");
             log.Info("  directory: {0}", profile.ProfileDirectory);
         }
-
+        
         private void IniProxy(string proxy, int port, string userName, string password)
         {
             profile.SetPreference("network.proxy.http", proxy);
@@ -200,12 +203,19 @@ namespace BotLinkedIn
         }
 
         private void InitDriver()
+
+      
         {
-            driver = new FirefoxDriver(new FirefoxBinary(), new FirefoxProfile(), TimeSpan.FromSeconds(180));
+            //java - System.SetProperty("webdriver.gecko.driver", "D:\Install\Visual Studio\geckodriver-v0.10.0-win64.exe");
+            //System.Environment.SetEnvironmentVariable("webdriver.gecko.driver", @"C:\BotLinkedIn\packages\WebDriver.GeckoDriver.0.9.0\content\geckodriver.exe");
+            //System.Environment.SetEnvironmentVariable("webdriver.firefox.marionette", @"C:\BotLinkedIn\packages\WebDriver.GeckoDriver.0.9.0\content\geckodriver.exe");
+            driver = new FirefoxDriver();
+            //driver = new FirefoxDriver(new FirefoxBinary(), new FirefoxProfile(), TimeSpan.FromSeconds(180));
             //driver = new FirefoxDriver();
             // Установить максимальное время загрузки страницы 
             driver.Manage().Timeouts().SetPageLoadTimeout(TimeSpan.FromSeconds(Settings.Selenium.PageLoadTimeout));
             return;
+            
         }
 
         private void InitFiringDriver()
@@ -215,5 +225,9 @@ namespace BotLinkedIn
             firingDriver.Navigated += FiringDriverNavigated;
             firingDriver.ExceptionThrown += FiringDriverExceptionThrown;
         }
+
+        
     }
+
+
 }
